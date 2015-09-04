@@ -4,9 +4,10 @@ require 'spec_helper'
 describe DockingStation do
 	it { expect(subject).to respond_to :release_bike }
 	it "releases working bikes" do
-    subject.dock Bike.new
+    bike = Bike.new
+		subject.dock bike
 		# expect(subject.release_bike).to be_an_instance_of(Bike)
-		expect(subject.release_bike).to be_working
+		expect(subject.release_bike bike).to be_working
 	end
   it { expect(subject).to respond_to(:dock).with(1).argument }
   it "has a default capacity" do
@@ -15,9 +16,17 @@ describe DockingStation do
 
 	describe "#release_bike" do
     it "raises an error when there are no bikes available" do
-      expect { subject.release_bike }.to raise_error "No bikes available"
+      bike = Bike.new
+			expect { subject.release_bike bike }.to raise_error "No bikes available"
+		end
+
+    it "raises an error when asked to release broken bike" do
+    	bike = Bike.new
+			bike.not_working
+			subject.dock bike
+			expect { subject.release_bike bike }.to raise_error "Bike is broken"
     end
-  end
+	end
 
   describe "#dock" do
     it "raises an error when full" do
@@ -25,4 +34,9 @@ describe DockingStation do
 			expect { subject.dock(Bike.new) }.to raise_error "Docking station full"
     end
   end
+
+	it "set_capacity changes docking station capacity" do
+		subject.capacity = 15
+		expect(subject.capacity).to equal 15
+	end
 end
