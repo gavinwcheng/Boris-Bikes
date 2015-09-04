@@ -3,7 +3,7 @@ require 'docking_station'
 describe DockingStation do
 	it { expect(subject).to respond_to :release_bike }
 	it "releases working bikes" do
-    bike = double :bike, working?:true
+    bike = double :bike, working?:true, class: Bike
 		subject.dock bike
 		# expect(subject.release_bike).to be_an_instance_of(Bike)
 		expect(subject.release_bike bike).to be_working
@@ -20,7 +20,7 @@ describe DockingStation do
 		end
 
     it "raises an error when asked to release broken bike" do
-    	bike = double :bike, working?: false
+    	bike = double :bike, working?: false, class: Bike
 			subject.dock bike
 			expect { subject.release_bike bike }.to raise_error "Bike is broken"
     end
@@ -28,12 +28,13 @@ describe DockingStation do
 
   describe "#dock" do
     it "raises an error when full" do
-    	subject.capacity.times { subject.dock(:bike) }
-			expect { subject.dock(:bike) }.to raise_error "Docking station full"
+			bike = double :bike, class: Bike
+    	subject.capacity.times { subject.dock(bike) }
+			expect { subject.dock(bike) }.to raise_error "Docking station full"
     end
 
 		it "raises an error when not bike" do
-      expect { subject.dock(:bike) }.to raise_error "Not bike!"
+      expect { subject.dock(:bike) }.to raise_error "Not a bike!"
 		end
   end
 
